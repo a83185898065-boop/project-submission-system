@@ -5,7 +5,8 @@ const path = require("path");
 
 const {
     S3Client,
-    PutObjectCommand
+    PutObjectCommand,
+    GetObjectCommand
 } = require("@aws-sdk/client-s3");
 
 const {
@@ -34,7 +35,9 @@ const PORT =
 // MIDDLEWARE
 // =======================
 
-app.use(express.json());
+app.use(
+    express.json()
+);
 
 app.use(
     express.urlencoded({
@@ -118,66 +121,117 @@ const submissionSchema =
     new mongoose.Schema({
 
         studentName: {
+
             type: String,
+
             required: true,
+
             trim: true
+
         },
+
 
         email: {
+
             type: String,
+
             required: true,
+
             trim: true
+
         },
+
 
         course: {
+
             type: String,
+
             required: true,
+
             trim: true
+
         },
+
 
         branch: {
+
             type: String,
+
             required: true,
+
             trim: true
+
         },
+
 
         year: {
+
             type: String,
+
             required: true,
+
             trim: true
+
         },
+
 
         rollNo: {
+
             type: String,
+
             required: true,
+
             trim: true
+
         },
+
 
         projectName: {
+
             type: String,
+
             required: true,
+
             trim: true
+
         },
+
 
         aiPrompt: {
+
             type: String,
+
             required: true,
+
             trim: true
+
         },
+
 
         fileUrl: {
+
             type: String,
+
             required: true
+
         },
+
 
         fileName: {
+
             type: String,
+
             required: true
+
         },
 
+
         submittedAt: {
+
             type: Date,
+
             default: Date.now
+
         }
 
     });
@@ -200,11 +254,90 @@ const Submission =
 
 function safeName(value) {
 
-    return String(value)
+    return String(
+        value || ""
+    )
+
+        .trim()
+
         .replace(
             /[^a-zA-Z0-9._-]/g,
             "_"
+        )
+
+        .replace(
+            /_+/g,
+            "_"
         );
+
+}
+
+
+// =======================
+// CREATE DOWNLOAD NAME
+// =======================
+
+function createDownloadName(
+    submission
+) {
+
+    const studentName =
+        safeName(
+            submission.studentName ||
+            "Student"
+        );
+
+
+    const course =
+        safeName(
+            submission.course ||
+            "Course"
+        );
+
+
+    const branch =
+        safeName(
+            submission.branch ||
+            "Branch"
+        );
+
+
+    const year =
+        safeName(
+            submission.year ||
+            "Year"
+        );
+
+
+    const rollNo =
+        safeName(
+            submission.rollNo ||
+            "RollNo"
+        );
+
+
+    const projectName =
+        safeName(
+            submission.projectName ||
+            "Project"
+        );
+
+
+    return (
+
+        `${studentName}_` +
+
+        `${course}_` +
+
+        `${branch}_` +
+
+        `${year}_` +
+
+        `${rollNo}_` +
+
+        `${projectName}.zip`
+
+    );
 
 }
 
@@ -214,6 +347,7 @@ function safeName(value) {
 // ==================================================
 
 app.post(
+
     "/api/create-upload-url",
 
     async (req, res) => {
@@ -223,11 +357,17 @@ app.post(
             const {
 
                 studentName,
+
                 course,
+
                 branch,
+
                 year,
+
                 rollNo,
+
                 fileName,
+
                 fileSize
 
             } = req.body;
@@ -240,11 +380,17 @@ app.post(
             if (
 
                 !studentName ||
+
                 !course ||
+
                 !branch ||
+
                 !year ||
+
                 !rollNo ||
+
                 !fileName ||
+
                 !fileSize
 
             ) {
@@ -268,9 +414,11 @@ app.post(
             // =======================
 
             if (
+
                 !fileName
                     .toLowerCase()
                     .endsWith(".zip")
+
             ) {
 
                 return res
@@ -296,8 +444,10 @@ app.post(
 
 
             if (
+
                 Number(fileSize) >
                 MAX_SIZE
+
             ) {
 
                 return res
@@ -377,6 +527,12 @@ app.post(
                 `${safeOriginalName}`;
 
 
+            console.log(
+                "Filebase Key:",
+                key
+            );
+
+
             // =======================
             // PRESIGNED URL
             // =======================
@@ -409,7 +565,9 @@ app.post(
                     command,
 
                     {
+
                         expiresIn: 600
+
                     }
 
                 );
@@ -438,15 +596,12 @@ app.post(
                 success: true,
 
                 uploadUrl:
-
                     uploadUrl,
 
                 key:
-
                     key,
 
                 fileUrl:
-
                     fileUrl
 
             });
@@ -499,14 +654,23 @@ app.post(
             const {
 
                 studentName,
+
                 email,
+
                 course,
+
                 branch,
+
                 year,
+
                 rollNo,
+
                 projectName,
+
                 aiPrompt,
+
                 fileName,
+
                 fileUrl
 
             } = req.body;
@@ -519,14 +683,23 @@ app.post(
             if (
 
                 !studentName ||
+
                 !email ||
+
                 !course ||
+
                 !branch ||
+
                 !year ||
+
                 !rollNo ||
+
                 !projectName ||
+
                 !aiPrompt ||
+
                 !fileName ||
+
                 !fileUrl
 
             ) {
@@ -550,9 +723,11 @@ app.post(
             // =======================
 
             if (
+
                 !fileName
                     .toLowerCase()
                     .endsWith(".zip")
+
             ) {
 
                 return res
@@ -567,6 +742,15 @@ app.post(
                     });
 
             }
+
+
+            // =======================
+            // CONSOLE DETAILS
+            // =======================
+
+            console.log(
+                "=============================="
+            );
 
 
             console.log(
@@ -613,6 +797,23 @@ app.post(
             console.log(
                 "Project Name:",
                 projectName
+            );
+
+
+            console.log(
+                "File Name:",
+                fileName
+            );
+
+
+            console.log(
+                "File URL:",
+                fileUrl
+            );
+
+
+            console.log(
+                "=============================="
             );
 
 
@@ -694,7 +895,16 @@ app.post(
                     studentName,
 
                 projectName:
-                    projectName
+                    projectName,
+
+                branch:
+                    branch,
+
+                year:
+                    year,
+
+                rollNo:
+                    rollNo
 
             });
 
@@ -719,6 +929,265 @@ app.post(
                         error.message
 
                 });
+
+        }
+
+    }
+
+);
+
+
+// ==================================================
+// DOWNLOAD PROJECT
+// ==================================================
+
+app.get(
+
+    "/api/download/:id",
+
+    async (req, res) => {
+
+        try {
+
+            // =======================
+            // FIND SUBMISSION
+            // =======================
+
+            const submission =
+                await Submission.findById(
+                    req.params.id
+                );
+
+
+            if (!submission) {
+
+                return res
+                    .status(404)
+                    .send(
+                        "Submission not found."
+                    );
+
+            }
+
+
+            // =======================
+            // FILE URL
+            // =======================
+
+            if (
+                !submission.fileUrl
+            ) {
+
+                return res
+                    .status(400)
+                    .send(
+                        "File URL not found."
+                    );
+
+            }
+
+
+            // =======================
+            // GET FILEBASE KEY
+            // =======================
+
+            let key;
+
+
+            try {
+
+                const fileUrl =
+                    new URL(
+                        submission.fileUrl
+                    );
+
+
+                key =
+                    decodeURIComponent(
+                        fileUrl.pathname
+                    );
+
+
+                key =
+                    key.replace(
+                        /^\/+/,
+                        ""
+                    );
+
+            }
+
+            catch (error) {
+
+                console.log(
+                    "URL Error:",
+                    error.message
+                );
+
+
+                return res
+                    .status(400)
+                    .send(
+                        "Invalid Filebase URL."
+                    );
+
+            }
+
+
+            if (!key) {
+
+                return res
+                    .status(400)
+                    .send(
+                        "File key not found."
+                    );
+
+            }
+
+
+            console.log(
+                "Download Key:",
+                key
+            );
+
+
+            // =======================
+            // GET FILEBASE OBJECT
+            // =======================
+
+            const command =
+                new GetObjectCommand({
+
+                    Bucket:
+                        process.env.FILEBASE_BUCKET,
+
+                    Key:
+                        key
+
+                });
+
+
+            const response =
+                await filebase.send(
+                    command
+                );
+
+
+            // =======================
+            // CREATE DOWNLOAD NAME
+            // =======================
+
+            const downloadName =
+                createDownloadName(
+                    submission
+                );
+
+
+            console.log(
+                "Download Name:",
+                downloadName
+            );
+
+
+            // =======================
+            // HEADERS
+            // =======================
+
+            res.setHeader(
+                "Content-Type",
+                "application/zip"
+            );
+
+
+            res.setHeader(
+                "Content-Disposition",
+                `attachment; filename="${downloadName}"`
+            );
+
+
+            if (
+                response.ContentLength
+            ) {
+
+                res.setHeader(
+                    "Content-Length",
+                    response.ContentLength
+                );
+
+            }
+
+
+            // =======================
+            // SEND FILE
+            // =======================
+
+            if (
+
+                response.Body &&
+
+                typeof response.Body.pipe ===
+                "function"
+
+            ) {
+
+                response.Body.pipe(
+                    res
+                );
+
+            }
+
+            else {
+
+                const chunks = [];
+
+
+                for await (
+
+                    const chunk
+                    of response.Body
+
+                ) {
+
+                    chunks.push(
+                        chunk
+                    );
+
+                }
+
+
+                const buffer =
+                    Buffer.concat(
+                        chunks
+                    );
+
+
+                res.end(
+                    buffer
+                );
+
+            }
+
+        }
+
+        catch (error) {
+
+            console.log(
+                "Download Error:",
+                error.message
+            );
+
+
+            if (
+                !res.headersSent
+            ) {
+
+                res
+                    .status(500)
+                    .send(
+                        "Download failed: " +
+                        error.message
+                    );
+
+            }
 
         }
 
@@ -752,6 +1221,33 @@ app.get(
 
 
 // =======================
+// HEALTH CHECK
+// =======================
+
+app.get(
+
+    "/api/health",
+
+    (req, res) => {
+
+        res.json({
+
+            success: true,
+
+            server:
+                "online",
+
+            message:
+                "Backend is running."
+
+        });
+
+    }
+
+);
+
+
+// =======================
 // 404
 // =======================
 
@@ -776,7 +1272,12 @@ app.use(
 
 app.use(
 
-    (error, req, res, next) => {
+    (
+        error,
+        req,
+        res,
+        next
+    ) => {
 
         console.log(
             "Server Error:",
@@ -811,7 +1312,42 @@ app.listen(
     () => {
 
         console.log(
+            "===================================="
+        );
+
+
+        console.log(
             `Server running at http://localhost:${PORT}`
+        );
+
+
+        console.log(
+            `Public folder: ${publicFolder}`
+        );
+
+
+        console.log(
+            "Upload API: /api/create-upload-url"
+        );
+
+
+        console.log(
+            "Submit API: /submit-project"
+        );
+
+
+        console.log(
+            "Download API: /api/download/:id"
+        );
+
+
+        console.log(
+            "Health API: /api/health"
+        );
+
+
+        console.log(
+            "===================================="
         );
 
     }
