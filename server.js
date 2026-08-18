@@ -1,14 +1,16 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const multer = require("multer");
 const dotenv = require("dotenv");
-const fs = require("fs");
 const path = require("path");
 
 const {
     S3Client,
     PutObjectCommand
 } = require("@aws-sdk/client-s3");
+
+const {
+    getSignedUrl
+} = require("@aws-sdk/s3-request-presigner");
 
 
 // =======================
@@ -19,17 +21,13 @@ dotenv.config();
 
 
 // =======================
-// CREATE APP
+// APP
 // =======================
 
 const app = express();
 
-
-// =======================
-// PORT
-// =======================
-
-const PORT = process.env.PORT || 5000;
+const PORT =
+    process.env.PORT || 5000;
 
 
 // =======================
@@ -49,210 +47,67 @@ app.use(
 // PUBLIC FOLDER
 // =======================
 
-const publicFolder = path.join(
-    __dirname,
-    "public"
-);
+const publicFolder =
+    path.join(
+        __dirname,
+        "public"
+    );
 
 app.use(
-    express.static(publicFolder)
+    express.static(
+        publicFolder
+    )
 );
 
 
 // =======================
-// ENVIRONMENT CHECK
+// MONGODB
 // =======================
 
-console.log(
-    "MongoDB URI Loaded:",
-    !!process.env.MONGODB_URI
-);
+mongoose
+    .connect(
+        process.env.MONGODB_URI
+    )
+    .then(() => {
 
-console.log(
-    "Filebase Access Key Loaded:",
-    !!process.env.FILEBASE_ACCESS_KEY
-);
-
-console.log(
-    "Filebase Secret Key Loaded:",
-    !!process.env.FILEBASE_SECRET_KEY
-);
-
-console.log(
-    "Filebase Bucket Loaded:",
-    !!process.env.FILEBASE_BUCKET
-);
-
-
-// =======================
-// MONGODB CONNECTION
-// =======================
-
-if (!process.env.MONGODB_URI) {
-
-    console.error(
-        "MONGODB_URI is missing in .env"
-    );
-
-} else {
-
-    mongoose
-        .connect(process.env.MONGODB_URI)
-        .then(() => {
-
-            console.log(
-                "MongoDB Connected Successfully"
-            );
-
-        })
-        .catch((error) => {
-
-            console.log(
-                "MongoDB Error:",
-                error.message
-            );
-
-        });
-
-}
-
-
-// =======================
-// FILEBASE S3 STORAGE
-// =======================
-
-const filebase = new S3Client({
-
-    region: "auto",
-
-    endpoint:
-        "https://s3.filebase.io",
-
-    credentials: {
-
-        accessKeyId:
-            process.env.FILEBASE_ACCESS_KEY,
-
-        secretAccessKey:
-            process.env.FILEBASE_SECRET_KEY
-
-    }
-
-});
-
-
-// =======================
-// UPLOAD FOLDER
-// =======================
-
-const uploadFolder = path.join(
-    __dirname,
-    "uploads"
-);
-
-
-if (!fs.existsSync(uploadFolder)) {
-
-    fs.mkdirSync(
-        uploadFolder,
-        {
-            recursive: true
-        }
-    );
-
-}
-
-
-// =======================
-// MULTER STORAGE
-// =======================
-
-const storage = multer.diskStorage({
-
-    destination: function (
-        req,
-        file,
-        cb
-    ) {
-
-        cb(
-            null,
-            uploadFolder
+        console.log(
+            "MongoDB Connected Successfully"
         );
 
-    },
+    })
+    .catch((error) => {
 
-    filename: function (
-        req,
-        file,
-        cb
-    ) {
-
-        const safeName =
-            file.originalname
-                .replace(/[^a-zA-Z0-9._-]/g, "_");
-
-        const fileName =
-            Date.now() +
-            "-" +
-            safeName;
-
-        cb(
-            null,
-            fileName
+        console.log(
+            "MongoDB Error:",
+            error.message
         );
 
-    }
-
-});
+    });
 
 
 // =======================
-// MULTER UPLOAD
+// FILEBASE
 // =======================
 
-const upload = multer({
+const filebase =
+    new S3Client({
 
-    storage: storage,
+        region: "auto",
 
-    limits: {
+        endpoint:
+            "https://s3.filebase.io",
 
-        fileSize:
-            50 * 1024 * 1024
+        credentials: {
 
-    },
+            accessKeyId:
+                process.env.FILEBASE_ACCESS_KEY,
 
-    fileFilter: function (
-        req,
-        file,
-        cb
-    ) {
-
-        const fileName =
-            file.originalname.toLowerCase();
-
-        if (
-            fileName.endsWith(".zip")
-        ) {
-
-            cb(
-                null,
-                true
-            );
-
-        } else {
-
-            cb(
-                new Error(
-                    "Only ZIP files are allowed."
-                )
-            );
+            secretAccessKey:
+                process.env.FILEBASE_SECRET_KEY
 
         }
 
-    }
-
-});
+    });
 
 
 // =======================
@@ -263,71 +118,74 @@ const submissionSchema =
     new mongoose.Schema({
 
         studentName: {
-
             type: String,
-
             required: true,
-
             trim: true
-
         },
 
         email: {
-
             type: String,
-
             required: true,
-
             trim: true
+        },
 
+        course: {
+            type: String,
+            required: true,
+            trim: true
+        },
+
+        branch: {
+            type: String,
+            required: true,
+            trim: true
+        },
+
+        year: {
+            type: String,
+            required: true,
+            trim: true
+        },
+
+        rollNo: {
+            type: String,
+            required: true,
+            trim: true
         },
 
         projectName: {
-
             type: String,
-
             required: true,
-
             trim: true
-
         },
 
         aiPrompt: {
-
             type: String,
-
             required: true,
-
             trim: true
-
         },
 
         fileUrl: {
-
             type: String,
-
             required: true
-
         },
 
         fileName: {
-
             type: String,
-
             required: true
-
         },
 
         submittedAt: {
-
             type: Date,
-
             default: Date.now
-
         }
 
     });
 
+
+// =======================
+// MODEL
+// =======================
 
 const Submission =
     mongoose.model(
@@ -337,135 +195,435 @@ const Submission =
 
 
 // =======================
-// SUBMIT PROJECT
+// SAFE FILE NAME
 // =======================
 
-app.post(
-    "/submit-project",
+function safeName(value) {
 
-    upload.single("projectZip"),
+    return String(value)
+        .replace(
+            /[^a-zA-Z0-9._-]/g,
+            "_"
+        );
+
+}
+
+
+// ==================================================
+// CREATE FILEBASE PRESIGNED UPLOAD URL
+// ==================================================
+
+app.post(
+    "/api/create-upload-url",
 
     async (req, res) => {
 
-        let uploadedFile = null;
-
         try {
 
-            // =======================
-            // CHECK ZIP
-            // =======================
-
-            if (!req.file) {
-
-                return res
-                    .status(400)
-                    .send(
-                        "Please upload your ZIP file."
-                    );
-
-            }
-
-
-            uploadedFile =
-                req.file.path;
-
-
-            // =======================
-            // FORM DATA
-            // =======================
-
             const {
+
                 studentName,
-                email,
-                projectName,
-                aiPrompt
+                course,
+                branch,
+                year,
+                rollNo,
+                fileName,
+                fileSize
+
             } = req.body;
 
 
             // =======================
-            // REQUIRED FIELDS
+            // VALIDATION
             // =======================
 
             if (
+
                 !studentName ||
-                !email ||
-                !projectName ||
-                !aiPrompt
+                !course ||
+                !branch ||
+                !year ||
+                !rollNo ||
+                !fileName ||
+                !fileSize
+
             ) {
 
                 return res
                     .status(400)
-                    .send(
-                        "Please fill all fields."
-                    );
+                    .json({
+
+                        success: false,
+
+                        message:
+                            "Required upload information missing."
+
+                    });
 
             }
 
 
-            console.log(
-                "Uploading ZIP to Filebase..."
-            );
+            // =======================
+            // ZIP CHECK
+            // =======================
+
+            if (
+                !fileName
+                    .toLowerCase()
+                    .endsWith(".zip")
+            ) {
+
+                return res
+                    .status(400)
+                    .json({
+
+                        success: false,
+
+                        message:
+                            "Only ZIP files are allowed."
+
+                    });
+
+            }
 
 
             // =======================
-            // FILEBASE FILE NAME
+            // 50 MB LIMIT
             // =======================
 
-            const filebaseFileName =
-                `competition-projects/${Date.now()}-${req.file.originalname.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+            const MAX_SIZE =
+                50 * 1024 * 1024;
+
+
+            if (
+                Number(fileSize) >
+                MAX_SIZE
+            ) {
+
+                return res
+                    .status(400)
+                    .json({
+
+                        success: false,
+
+                        message:
+                            "File size must be less than 50 MB."
+
+                    });
+
+            }
 
 
             // =======================
-            // READ ZIP
+            // SAFE VALUES
             // =======================
 
-            const fileBuffer =
-                fs.readFileSync(
-                    req.file.path
+            const safeStudentName =
+                safeName(
+                    studentName
+                );
+
+
+            const safeCourse =
+                safeName(
+                    course
+                );
+
+
+            const safeBranch =
+                safeName(
+                    branch
+                );
+
+
+            const safeYear =
+                safeName(
+                    year
+                );
+
+
+            const safeRollNo =
+                safeName(
+                    rollNo
+                );
+
+
+            const safeOriginalName =
+                safeName(
+                    fileName
                 );
 
 
             // =======================
-            // UPLOAD TO FILEBASE
+            // FILEBASE KEY
             // =======================
 
-            await filebase.send(
+            const key =
 
+                `competition-projects/` +
+
+                `${safeStudentName}_` +
+
+                `${safeCourse}_` +
+
+                `${safeBranch}_` +
+
+                `${safeYear}_` +
+
+                `${safeRollNo}_` +
+
+                `${Date.now()}-` +
+
+                `${safeOriginalName}`;
+
+
+            // =======================
+            // PRESIGNED URL
+            // =======================
+
+            console.time(
+                "CREATE_SIGNED_URL"
+            );
+
+
+            const command =
                 new PutObjectCommand({
 
                     Bucket:
                         process.env.FILEBASE_BUCKET,
 
                     Key:
-                        filebaseFileName,
-
-                    Body:
-                        fileBuffer,
+                        key,
 
                     ContentType:
                         "application/zip"
 
-                })
+                });
 
+
+            const uploadUrl =
+                await getSignedUrl(
+
+                    filebase,
+
+                    command,
+
+                    {
+                        expiresIn: 600
+                    }
+
+                );
+
+
+            console.timeEnd(
+                "CREATE_SIGNED_URL"
+            );
+
+
+            // =======================
+            // PUBLIC FILE URL
+            // =======================
+
+            const fileUrl =
+
+                `https://${process.env.FILEBASE_BUCKET}.s3.filebase.io/${key}`;
+
+
+            // =======================
+            // RESPONSE
+            // =======================
+
+            res.json({
+
+                success: true,
+
+                uploadUrl:
+
+                    uploadUrl,
+
+                key:
+
+                    key,
+
+                fileUrl:
+
+                    fileUrl
+
+            });
+
+        }
+
+        catch (error) {
+
+            console.log(
+                "Presigned URL Error:",
+                error.message
+            );
+
+
+            res
+                .status(500)
+                .json({
+
+                    success: false,
+
+                    message:
+                        error.message
+
+                });
+
+        }
+
+    }
+
+);
+
+
+// ==================================================
+// SAVE SUBMISSION
+// ==================================================
+
+app.post(
+
+    "/submit-project",
+
+    async (req, res) => {
+
+        try {
+
+            console.time(
+                "TOTAL_SUBMISSION"
+            );
+
+
+            const {
+
+                studentName,
+                email,
+                course,
+                branch,
+                year,
+                rollNo,
+                projectName,
+                aiPrompt,
+                fileName,
+                fileUrl
+
+            } = req.body;
+
+
+            // =======================
+            // REQUIRED DATA
+            // =======================
+
+            if (
+
+                !studentName ||
+                !email ||
+                !course ||
+                !branch ||
+                !year ||
+                !rollNo ||
+                !projectName ||
+                !aiPrompt ||
+                !fileName ||
+                !fileUrl
+
+            ) {
+
+                return res
+                    .status(400)
+                    .json({
+
+                        success: false,
+
+                        message:
+                            "Please fill all fields."
+
+                    });
+
+            }
+
+
+            // =======================
+            // ZIP CHECK
+            // =======================
+
+            if (
+                !fileName
+                    .toLowerCase()
+                    .endsWith(".zip")
+            ) {
+
+                return res
+                    .status(400)
+                    .json({
+
+                        success: false,
+
+                        message:
+                            "Only ZIP files are allowed."
+
+                    });
+
+            }
+
+
+            console.log(
+                "Student Submission Received"
             );
 
 
             console.log(
-                "ZIP uploaded to Filebase successfully."
+                "Student Name:",
+                studentName
+            );
+
+
+            console.log(
+                "Email:",
+                email
+            );
+
+
+            console.log(
+                "Course:",
+                course
+            );
+
+
+            console.log(
+                "Branch:",
+                branch
+            );
+
+
+            console.log(
+                "Year:",
+                year
+            );
+
+
+            console.log(
+                "Roll No:",
+                rollNo
+            );
+
+
+            console.log(
+                "Project Name:",
+                projectName
             );
 
 
             // =======================
-            // FILE URL
+            // MONGODB
             // =======================
 
-            const fileUrl =
-                `https://${process.env.FILEBASE_BUCKET}.s3.filebase.io/${filebaseFileName}`;
+            console.time(
+                "MONGODB_SAVE"
+            );
 
-
-            // =======================
-            // SAVE TO MONGODB
-            // =======================
 
             const submission =
                 new Submission({
@@ -475,6 +633,18 @@ app.post(
 
                     email:
                         email,
+
+                    course:
+                        course,
+
+                    branch:
+                        branch,
+
+                    year:
+                        year,
+
+                    rollNo:
+                        rollNo,
 
                     projectName:
                         projectName,
@@ -486,7 +656,7 @@ app.post(
                         fileUrl,
 
                     fileName:
-                        req.file.originalname
+                        fileName
 
                 });
 
@@ -494,201 +664,39 @@ app.post(
             await submission.save();
 
 
+            console.timeEnd(
+                "MONGODB_SAVE"
+            );
+
+
+            console.timeEnd(
+                "TOTAL_SUBMISSION"
+            );
+
+
             console.log(
-                "Submission saved in MongoDB."
+                "Submission saved successfully."
             );
 
 
             // =======================
-            // DELETE LOCAL ZIP
+            // SUCCESS
             // =======================
 
-            if (
-                fs.existsSync(
-                    req.file.path
-                )
-            ) {
+            res.json({
 
-                fs.unlinkSync(
-                    req.file.path
-                );
+                success: true,
 
-            }
+                message:
+                    "Project submitted successfully.",
 
+                studentName:
+                    studentName,
 
-            uploadedFile = null;
+                projectName:
+                    projectName
 
-
-            // =======================
-            // SUCCESS RESPONSE
-            // =======================
-
-            res.send(`
-
-<!DOCTYPE html>
-
-<html lang="en">
-
-<head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>
-        Submission Successful
-    </title>
-
-    <style>
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-
-            margin: 0;
-
-            min-height: 100vh;
-
-            display: flex;
-
-            justify-content: center;
-
-            align-items: center;
-
-            font-family: Arial, sans-serif;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #0f172a,
-                    #1e293b
-                );
-
-            padding: 20px;
-
-        }
-
-        .box {
-
-            width: 100%;
-
-            max-width: 500px;
-
-            background: white;
-
-            padding: 40px;
-
-            border-radius: 18px;
-
-            text-align: center;
-
-            box-shadow:
-                0 20px 50px
-                rgba(0, 0, 0, 0.3);
-
-        }
-
-        h1 {
-
-            color: #16a34a;
-
-            margin-bottom: 20px;
-
-        }
-
-        p {
-
-            color: #444;
-
-            line-height: 1.6;
-
-        }
-
-        .project {
-
-            font-weight: bold;
-
-            color: #111;
-
-        }
-
-        a {
-
-            display: inline-block;
-
-            margin-top: 20px;
-
-            padding: 12px 22px;
-
-            background: #2563eb;
-
-            color: white;
-
-            text-decoration: none;
-
-            border-radius: 8px;
-
-        }
-
-        a:hover {
-
-            background: #1d4ed8;
-
-        }
-
-    </style>
-
-</head>
-
-<body>
-
-    <div class="box">
-
-        <h1>
-            Project Submitted Successfully ✅
-        </h1>
-
-        <p>
-
-            Student:
-
-            <strong>
-                ${studentName}
-            </strong>
-
-        </p>
-
-        <p>
-
-            Project:
-
-            <span class="project">
-                ${projectName}
-            </span>
-
-        </p>
-
-        <p>
-            Your ZIP file has been
-            uploaded successfully.
-        </p>
-
-        <a href="/">
-            Go Back
-        </a>
-
-    </div>
-
-</body>
-
-</html>
-
-            `);
+            });
 
         }
 
@@ -700,41 +708,17 @@ app.post(
             );
 
 
-            // =======================
-            // DELETE FAILED UPLOAD
-            // =======================
-
-            if (
-                uploadedFile &&
-                fs.existsSync(
-                    uploadedFile
-                )
-            ) {
-
-                try {
-
-                    fs.unlinkSync(
-                        uploadedFile
-                    );
-
-                } catch (deleteError) {
-
-                    console.log(
-                        "File Delete Error:",
-                        deleteError.message
-                    );
-
-                }
-
-            }
-
-
             res
                 .status(500)
-                .send(
-                    "Upload failed: " +
-                    error.message
-                );
+                .json({
+
+                    success: false,
+
+                    message:
+                        "Submission failed: " +
+                        error.message
+
+                });
 
         }
 
@@ -748,15 +732,18 @@ app.post(
 // =======================
 
 app.get(
+
     "/",
 
     (req, res) => {
 
         res.sendFile(
+
             path.join(
                 publicFolder,
                 "index.html"
             )
+
         );
 
     }
@@ -765,10 +752,11 @@ app.get(
 
 
 // =======================
-// 404 ROUTE
+// 404
 // =======================
 
 app.use(
+
     (req, res) => {
 
         res
@@ -778,6 +766,7 @@ app.use(
             );
 
     }
+
 );
 
 
@@ -786,6 +775,7 @@ app.use(
 // =======================
 
 app.use(
+
     (error, req, res, next) => {
 
         console.log(
@@ -794,42 +784,19 @@ app.use(
         );
 
 
-        if (
-            error.message ===
-            "Only ZIP files are allowed."
-        ) {
-
-            return res
-                .status(400)
-                .send(
-                    "Only ZIP files are allowed."
-                );
-
-        }
-
-
-        if (
-            error.code ===
-            "LIMIT_FILE_SIZE"
-        ) {
-
-            return res
-                .status(400)
-                .send(
-                    "File size must be less than 50 MB."
-                );
-
-        }
-
-
         res
             .status(500)
-            .send(
-                "Something went wrong: " +
-                error.message
-            );
+            .json({
+
+                success: false,
+
+                message:
+                    error.message
+
+            });
 
     }
+
 );
 
 
@@ -845,10 +812,6 @@ app.listen(
 
         console.log(
             `Server running at http://localhost:${PORT}`
-        );
-
-        console.log(
-            `Public folder: ${publicFolder}`
         );
 
     }

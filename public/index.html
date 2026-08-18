@@ -1,501 +1,1637 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Project Submission</title>
 
-    <title>Project Submission</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: "Inter", sans-serif;
             min-height: 100vh;
-            background: linear-gradient(135deg,
-                    #0f172a,
-                    #1e293b);
+            background: #f0f4f9;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 30px;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 600px;
-        }
-
-        .card {
-            background: #ffffff;
-            padding: 35px;
-            border-radius: 18px;
-            box-shadow:
-                0 20px 50px rgba(0, 0, 0, 0.35);
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
+            padding: 2rem 1rem;
             color: #0f172a;
-            font-size: 30px;
-            margin-bottom: 8px;
         }
 
-        .header p {
-            color: #64748b;
-            font-size: 14px;
+        .app-wrapper {
+            width: 100%;
+            max-width: 900px;
+            background: #fff;
+            border-radius: 2rem;
+            overflow: hidden;
+            box-shadow:
+                0 25px 60px rgba(0, 20, 50, 0.12),
+                0 8px 24px rgba(0, 0, 0, 0.04);
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, #0b1a33 0%, #1a3a6b 50%, #2563eb 100%);
+            padding: 2rem 2.5rem 1.8rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            width: 320px;
+            height: 320px;
+            left: -120px;
+            bottom: -220px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.04);
+        }
+
+        .header::after {
+            content: "";
+            position: absolute;
+            width: 430px;
+            height: 430px;
+            right: -180px;
+            top: -280px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.04);
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .header-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.8rem;
+            backdrop-filter: blur(5px);
+        }
+
+        .header-text h1 {
+            color: #fff;
+            font-size: 1.55rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .header-text p {
+            color: rgba(255,255,255,0.72);
+            font-size: 0.9rem;
+            margin-top: 0.2rem;
+        }
+
+        .header-badge {
+            margin-left: auto;
+            padding: 0.35rem 1rem;
+            border-radius: 100px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.9);
+            font-size: 0.72rem;
+            white-space: nowrap;
+        }
+
+        /* FORM */
+        .form-body {
+            padding: 2rem 2.5rem 2.5rem;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+            color: #1e293b;
+            font-size: 0.92rem;
+            font-weight: 700;
+        }
+
+        .section-title i {
+            color: #2563eb;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem 1.5rem;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.42rem;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
         }
 
         label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #334155;
+            color: #1e293b;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        label i {
+            width: 1rem;
+            color: #64748b;
+            font-size: 0.75rem;
+        }
+
+        .required {
+            color: #ef4444;
         }
 
         input,
+        select,
         textarea {
             width: 100%;
-            padding: 13px 15px;
-            border: 1px solid #cbd5e1;
-            border-radius: 9px;
-            font-size: 15px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            background: #fafbfc;
+            color: #0f172a;
+            font-family: "Inter", sans-serif;
+            font-size: 0.9rem;
             outline: none;
-            transition: 0.2s;
+            padding: 0.72rem 1rem;
+            transition: 0.25s ease;
         }
 
         input:focus,
+        select:focus,
         textarea:focus {
             border-color: #2563eb;
-            box-shadow:
-                0 0 0 3px rgba(37,
-                    99,
-                    235,
-                    0.1);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(37,99,235,0.08);
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #94a3b8;
+        }
+
+        select {
+            cursor: pointer;
         }
 
         textarea {
-            min-height: 120px;
+            min-height: 105px;
             resize: vertical;
+            line-height: 1.5;
         }
 
-        .file-box {
-            border: 2px dashed #94a3b8;
-            padding: 25px;
-            border-radius: 10px;
+        .hint {
+            color: #94a3b8;
+            font-size: 0.7rem;
+        }
+
+        /* UPLOAD */
+        .upload-zone {
+            grid-column: 1 / -1;
+            position: relative;
+            border: 2px dashed #d1d9e6;
+            border-radius: 16px;
+            padding: 1.8rem 1.5rem;
             text-align: center;
-            background: #f8fafc;
-        }
-
-        .file-box input {
-            border: none;
-            padding: 0;
-            background: transparent;
-        }
-
-        .file-info {
-            margin-top: 8px;
-            color: #64748b;
-            font-size: 13px;
-        }
-
-        button {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 9px;
-            background: #2563eb;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
+            background: #fafbfc;
             cursor: pointer;
-            transition: 0.2s;
+            transition: 0.3s ease;
         }
 
-        button:hover {
-            background: #1d4ed8;
+        .upload-zone:hover {
+            border-color: #2563eb;
+            background: #f1f6fe;
         }
 
-        button:disabled {
-            background: #94a3b8;
+        .upload-zone.dragover {
+            border-color: #2563eb;
+            background: #e8f0fe;
+            box-shadow: 0 0 0 4px rgba(37,99,235,0.06);
+        }
+
+        .upload-zone.has-file {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+
+        .upload-zone.error {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .upload-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-icon {
+            font-size: 2.35rem;
+            color: #94a3b8;
+            margin-bottom: 0.45rem;
+            transition: 0.3s ease;
+        }
+
+        .upload-zone:hover .upload-icon {
+            color: #2563eb;
+        }
+
+        .has-file .upload-icon {
+            color: #22c55e;
+        }
+
+        .upload-zone h4 {
+            font-size: 0.95rem;
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        .upload-zone p {
+            color: #94a3b8;
+            font-size: 0.8rem;
+            margin-top: 0.2rem;
+        }
+
+        .file-meta {
+            display: none;
+            margin-top: 0.7rem;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .has-file .file-meta {
+            display: flex;
+        }
+
+        .file-name {
+            color: #16a34a;
+            background: rgba(34,197,94,0.1);
+            padding: 0.3rem 1rem;
+            border-radius: 100px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            max-width: 90%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .file-status {
+            color: #64748b;
+            font-size: 0.75rem;
+        }
+
+        /* ACTIONS */
+        .form-actions {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 0.4rem;
+            flex-wrap: wrap;
+        }
+
+        .form-status {
+            color: #64748b;
+            font-size: 0.82rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .form-status.success {
+            color: #16a34a;
+        }
+
+        .form-status.error {
+            color: #dc2626;
+        }
+
+        .form-status.warning {
+            color: #f59e0b;
+        }
+
+        .btn-submit {
+            min-width: 205px;
+            border: none;
+            border-radius: 14px;
+            padding: 0.88rem 2rem;
+            background: linear-gradient(135deg, #1a3a6b, #2563eb);
+            color: #fff;
+            font-family: "Inter", sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            box-shadow: 0 4px 16px rgba(37,99,235,0.25);
+            transition: 0.3s ease;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(37,99,235,0.35);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.55;
             cursor: not-allowed;
         }
 
-        .message {
+        .spinner {
             display: none;
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 9px;
-            text-align: center;
-            font-size: 14px;
+            width: 19px;
+            height: 19px;
+            border: 2.5px solid rgba(255,255,255,0.25);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
         }
 
-        .success {
-            background: #dcfce7;
-            color: #166534;
+        .btn-submit.loading .spinner {
+            display: inline-block;
         }
 
-        .error {
-            background: #fee2e2;
-            color: #991b1b;
+        .btn-submit.loading .btn-icon,
+        .btn-submit.loading .btn-text {
+            display: none;
         }
 
-        .footer {
-            text-align: center;
-            margin-top: 20px;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* TOAST */
+        .toast-container {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.2rem;
+            z-index: 9999;
+            width: min(390px, calc(100% - 2rem));
+        }
+
+        .toast {
+            background: #fff;
+            border-radius: 14px;
+            padding: 1rem 1.15rem;
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+            border-left: 4px solid #2563eb;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.success { border-left-color: #22c55e; }
+        .toast.error { border-left-color: #ef4444; }
+        .toast.warning { border-left-color: #f59e0b; }
+
+        .toast-icon {
+            font-size: 1.15rem;
+        }
+
+        .toast.success .toast-icon { color: #22c55e; }
+        .toast.error .toast-icon { color: #ef4444; }
+        .toast.warning .toast-icon { color: #f59e0b; }
+
+        .toast-body {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .toast-message {
+            color: #475569;
+            font-size: 0.8rem;
+            margin-top: 0.15rem;
+            line-height: 1.4;
+        }
+
+        .toast-close {
+            border: none;
+            background: none;
             color: #94a3b8;
-            font-size: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(25px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+
+        /* ZIP UPLOAD PROGRESS */
+        .upload-progress {
+            display: none;
+            margin-top: 1rem;
+            text-align: left;
+        }
+
+        .upload-progress.active {
+            display: block;
+        }
+
+        .progress-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.45rem;
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .progress-label {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-weight: 600;
+        }
+
+        .progress-percent {
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 100px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            border-radius: 100px;
+            background: linear-gradient(90deg, #1a3a6b, #2563eb);
+            transition: width 0.2s ease;
+        }
+
+        .upload-progress.success .progress-bar {
+            background: linear-gradient(90deg, #16a34a, #22c55e);
+        }
+
+        .upload-progress.success .progress-percent {
+            color: #16a34a;
+        }
+
+        .upload-progress.loading .progress-bar {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-progress.loading .progress-bar::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -35%;
+            width: 35%;
+            height: 100%;
+            background: rgba(255,255,255,0.35);
+            animation: progressShimmer 1s linear infinite;
+        }
+
+        @keyframes progressShimmer {
+            from { left: -35%; }
+            to { left: 100%; }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 700px) {
+            body {
+                padding: 0.7rem;
+                align-items: flex-start;
+            }
+
+            .app-wrapper {
+                border-radius: 1.2rem;
+                margin: 0.5rem 0;
+            }
+
+            .header {
+                padding: 1.45rem 1.25rem;
+            }
+
+            .header-content {
+                align-items: flex-start;
+            }
+
+            .header-badge {
+                margin-left: 0;
+                width: 100%;
+                text-align: center;
+            }
+
+            .header-text h1 {
+                font-size: 1.2rem;
+            }
+
+            .form-body {
+                padding: 1.25rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .full-width,
+            .upload-zone,
+            .form-actions {
+                grid-column: 1;
+            }
+
+            .form-actions {
+                flex-direction: column-reverse;
+                align-items: stretch;
+            }
+
+            .btn-submit {
+                width: 100%;
+            }
+
+            .form-status {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+
+            .form-body {
+                padding: 1rem;
+            }
         }
     </style>
-
 </head>
-
 
 <body>
 
-    <div class="container">
+<div class="toast-container" id="toastContainer"></div>
 
-        <div class="card">
+<div class="app-wrapper">
 
-            <div class="header">
-
-                <h1>
-                    Project Submission 🚀
-                </h1>
-
-                <p>
-                    Submit your project ZIP file
-                </p>
-
+    <header class="header">
+        <div class="header-content">
+            <div class="header-icon">
+                <i class="fas fa-robot"></i>
             </div>
 
+            <div class="header-text">
+                <h1>AI Based Project Submission</h1>
+                <p>Upload your project ZIP & submit student details</p>
+            </div>
 
-            <form id="submissionForm" action="/submit-project" method="POST" enctype="multipart/form-data">
+            <span class="header-badge">
+                <i class="fas fa-shield-alt"></i>
+                Secure Submission
+            </span>
+        </div>
+    </header>
 
-                <!-- Student Name -->
+    <div class="form-body">
 
-                <div class="form-group">
+        <div class="section-title">
+            <i class="fas fa-user-graduate"></i>
+            Student Information
+        </div>
 
+        <form id="submissionForm" action="/submit-project" method="POST" enctype="multipart/form-data">
+
+            <div class="form-grid">
+
+                <!-- STUDENT NAME -->
+                <div class="form-group full-width">
                     <label for="studentName">
+                        <i class="fas fa-user"></i>
                         Student Name
+                        <span class="required">*</span>
                     </label>
 
-                    <input type="text" id="studentName" name="studentName" placeholder="Enter your full name" required>
-
+                    <input
+                        type="text"
+                        id="studentName"
+                        name="studentName"
+                        placeholder="Enter student's full name"
+                        required
+                    >
                 </div>
 
-
-                <!-- Email -->
-
+                <!-- EMAIL -->
                 <div class="form-group">
-
                     <label for="email">
+                        <i class="fas fa-envelope"></i>
                         Email
+                        <span class="required">*</span>
                     </label>
 
-                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
-
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="student@example.com"
+                        required
+                    >
                 </div>
 
-
-                <!-- Project Name -->
-
+                <!-- ROLL NO -->
                 <div class="form-group">
+                    <label for="rollNo">
+                        <i class="fas fa-id-card"></i>
+                        Roll Number
+                        <span class="required">*</span>
+                    </label>
 
+                    <input
+                        type="text"
+                        id="rollNo"
+                        name="rollNo"
+                        placeholder="Enter roll number"
+                        required
+                    >
+                </div>
+
+                <!-- COURSE -->
+                <div class="form-group">
+                    <label for="course">
+                        <i class="fas fa-graduation-cap"></i>
+                        Course
+                        <span class="required">*</span>
+                    </label>
+
+                    <select id="course" name="course" required>
+                        <option value="">Select Course</option>
+                        <option value="B.Tech">B.Tech</option>
+                        <option value="M.Tech">M.Tech</option>
+                        <option value="BCA">BCA</option>
+                        <option value="MCA">MCA</option>
+                        <option value="B.Sc">B.Sc</option>
+                        <option value="M.Sc">M.Sc</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <!-- BRANCH -->
+                <div class="form-group">
+                    <label for="branch">
+                        <i class="fas fa-code-branch"></i>
+                        Branch
+                        <span class="required">*</span>
+                    </label>
+
+                    <select id="branch" name="branch" required>
+                        <option value="">Select Branch</option>
+                        <option value="Computer Science and Engineering">Computer Science</option>
+                        <option value="CSE (AIML)">CSE (AIML)</option>
+                        <option value="Information Technology">Information Technology</option>
+                        <option value="Data Science">Data Science</option>
+                        <option value="Electronics and Communication Engineering">ECE</option>
+                        <option value="Electrical Engineering">Electrical Engineering</option>
+                        <option value="Mechanical Engineering">Mechanical Engineering</option>
+                        <option value="Civil Engineering">Civil Engineering</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <!-- YEAR -->
+                <div class="form-group">
+                    <label for="year">
+                        <i class="fas fa-calendar-alt"></i>
+                        Year
+                        <span class="required">*</span>
+                    </label>
+
+                    <select id="year" name="year" required>
+                        <option value="">Select Year</option>
+                        <option value="1st Year">1st Year</option>
+                        <option value="2nd Year">2nd Year</option>
+                        <option value="3rd Year">3rd Year</option>
+                        <option value="4th Year">4th Year</option>
+                    </select>
+                </div>
+
+                <!-- PROJECT NAME -->
+                <div class="form-group">
                     <label for="projectName">
+                        <i class="fas fa-laptop-code"></i>
                         Project Name
+                        <span class="required">*</span>
                     </label>
 
-                    <input type="text" id="projectName" name="projectName" placeholder="Enter project name" required>
-
+                    <input
+                        type="text"
+                        id="projectName"
+                        name="projectName"
+                        placeholder="Enter project name"
+                        required
+                    >
                 </div>
 
-
-                <!-- AI Prompt -->
-
-                <div class="form-group">
-
+                <!-- AI PROMPT -->
+                <div class="form-group full-width">
                     <label for="aiPrompt">
+                        <i class="fas fa-wand-magic-sparkles"></i>
                         AI Prompt
+                        <span class="required">*</span>
                     </label>
 
-                    <textarea id="aiPrompt" name="aiPrompt" placeholder="Enter the AI prompt used in your project"
-                        required></textarea>
+                    <textarea
+                        id="aiPrompt"
+                        name="aiPrompt"
+                        placeholder="Enter the AI prompt used in your project..."
+                        required
+                    ></textarea>
 
+                    <span class="hint">
+                        Mention the prompt/instructions used with AI while developing your project.
+                    </span>
                 </div>
 
-
-                <!-- ZIP File -->
-
-                <div class="form-group">
+                <!-- ZIP UPLOAD -->
+                <div class="form-group full-width">
 
                     <label>
+                        <i class="fas fa-file-zipper"></i>
                         Project ZIP File
+                        <span class="required">*</span>
                     </label>
 
-                    <div class="file-box">
+                    <div class="upload-zone" id="uploadZone">
 
-                        <input type="file" id="projectZip" name="projectZip" accept=".zip" required>
+                        <input
+                            type="file"
+                            id="projectZip"
+                            name="projectZip"
+                            accept=".zip"
+                            required
+                        >
 
-                        <div class="file-info">
-                            Only ZIP files are allowed.
-                            Maximum size: 50 MB.
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+
+                        <h4>Upload Project ZIP</h4>
+
+                        <p>
+                            Drag & drop or click to browse • <strong>.zip</strong> only
+                        </p>
+
+                        <div class="file-meta">
+
+                            <span class="file-name">
+                                <i class="fas fa-paperclip"></i>
+                                <span id="fileNameText"></span>
+                            </span>
+
+                            <span class="file-status" id="fileStatus">
+                                Waiting
+                            </span>
+
+                        </div>
+
+                        <div class="upload-progress" id="uploadProgress">
+                            <div class="progress-head">
+                                <span class="progress-label">
+                                    <i class="fas fa-cloud-arrow-up"></i>
+                                    <span id="progressText">Preparing ZIP...</span>
+                                </span>
+                                <span class="progress-percent" id="progressPercent">0%</span>
+                            </div>
+
+                            <div class="progress-track">
+                                <div class="progress-bar" id="progressBar"></div>
+                            </div>
                         </div>
 
                     </div>
 
+                    <span class="hint">
+                        Maximum file size: 50 MB
+                    </span>
+
                 </div>
 
+                <!-- ACTIONS -->
+                <div class="form-actions">
 
-                <!-- Submit -->
+                    <div class="form-status" id="formStatus">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Fill the form and upload a ZIP file</span>
+                    </div>
 
-                <button type="submit" id="submitBtn">
-                    Submit Project
-                </button>
+                    <button
+                        type="submit"
+                        class="btn-submit"
+                        id="submitBtn"
+                    >
+                        <span class="spinner"></span>
 
+                        <span class="btn-icon">
+                            <i class="fas fa-paper-plane"></i>
+                        </span>
 
-            </form>
+                        <span class="btn-text">
+                            Submit Project
+                        </span>
+                    </button>
 
-
-            <!-- Message -->
-
-            <div id="message" class="message"></div>
-
-
-
-
-
-
-
-
-            <div class="footer">
-
-                Project Submission System
+                </div>
 
             </div>
 
-        </div>
+        </form>
 
     </div>
 
-
-    <script>
-
-        const form =
-            document.getElementById(
-                "submissionForm"
-            );
-
-        const fileInput =
-            document.getElementById(
-                "projectZip"
-            );
-
-        const submitBtn =
-            document.getElementById(
-                "submitBtn"
-            );
-
-        const message =
-            document.getElementById(
-                "message"
-            );
+</div>
 
 
-        // =======================
-        // File Validation
-        // =======================
+<script>
 
-        fileInput.addEventListener(
-            "change",
-            function () {
+    const form = document.getElementById("submissionForm");
+    const fileInput = document.getElementById("projectZip");
+    const uploadZone = document.getElementById("uploadZone");
+    const fileNameText = document.getElementById("fileNameText");
+    const fileStatus = document.getElementById("fileStatus");
+    const submitBtn = document.getElementById("submitBtn");
+    const formStatus = document.getElementById("formStatus");
+    const toastContainer = document.getElementById("toastContainer");
 
-                const file =
-                    fileInput.files[0];
+    const uploadProgress = document.getElementById("uploadProgress");
+    const progressBar = document.getElementById("progressBar");
+    const progressPercent = document.getElementById("progressPercent");
+    const progressText = document.getElementById("progressText");
 
-                if (!file) {
-                    return;
-                }
-
-                if (
-                    !file.name
-                        .toLowerCase()
-                        .endsWith(".zip")
-                ) {
-
-                    alert(
-                        "Only ZIP files are allowed."
-                    );
-
-                    fileInput.value = "";
-
-                    return;
-                }
+    const MAX_FILE_SIZE = 50 * 1024 * 1024;
 
 
-                const maxSize =
-                    50 * 1024 * 1024;
+    // =========================
+    // TOAST
+    // =========================
 
+    function showToast(title, message, type = "success") {
 
-                if (
-                    file.size > maxSize
-                ) {
+        const toast = document.createElement("div");
 
-                    alert(
-                        "File size must be less than 50 MB."
-                    );
+        toast.className = "toast " + type;
 
-                    fileInput.value = "";
+        const icons = {
+            success: "fa-check-circle",
+            error: "fa-times-circle",
+            warning: "fa-exclamation-circle"
+        };
 
-                    return;
-                }
+        toast.innerHTML = `
+            <div class="toast-icon">
+                <i class="fas ${icons[type] || icons.success}"></i>
+            </div>
 
+            <div class="toast-body">
+                <div class="toast-title">${title}</div>
+                <div class="toast-message">${message}</div>
+            </div>
+
+            <button class="toast-close" type="button">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+
+        toast
+            .querySelector(".toast-close")
+            .addEventListener("click", () => toast.remove());
+
+        toastContainer.appendChild(toast);
+
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.remove();
             }
+        }, 6000);
+    }
+
+
+    // =========================
+    // STATUS
+    // =========================
+
+    function setStatus(message, type = "") {
+
+        const icon = formStatus.querySelector("i");
+        const text = formStatus.querySelector("span");
+
+        text.textContent = message;
+
+        formStatus.className =
+            "form-status" + (type ? " " + type : "");
+
+        if (type === "success") {
+            icon.className = "fas fa-check-circle";
+        }
+        else if (type === "error") {
+            icon.className = "fas fa-times-circle";
+        }
+        else if (type === "warning") {
+            icon.className = "fas fa-exclamation-circle";
+        }
+        else {
+            icon.className = "fas fa-info-circle";
+        }
+    }
+
+
+
+    // =========================
+    // ZIP PROGRESS LINE
+    // =========================
+
+    function resetProgress() {
+        uploadProgress.classList.remove("active", "loading", "success");
+        progressBar.style.width = "0%";
+        progressPercent.textContent = "0%";
+        progressText.textContent = "Preparing ZIP...";
+    }
+
+    function startProgress() {
+        uploadProgress.classList.add("active", "loading");
+        uploadProgress.classList.remove("success");
+        progressBar.style.width = "0%";
+        progressPercent.textContent = "0%";
+        progressText.textContent = "Preparing ZIP...";
+    }
+
+    function updateProgress(percent, text) {
+        const value = Math.max(0, Math.min(100, Math.round(percent)));
+        progressBar.style.width = value + "%";
+        progressPercent.textContent = value + "%";
+        progressText.textContent = text;
+    }
+
+    function finishProgress() {
+        uploadProgress.classList.remove("loading");
+        uploadProgress.classList.add("active", "success");
+        updateProgress(100, "ZIP ready to submit");
+    }
+
+    // =========================
+    // FILE STATE
+    // =========================
+
+    function resetFileState() {
+
+        uploadZone.classList.remove(
+            "has-file",
+            "error",
+            "dragover"
         );
 
-
-        // =======================
-        // Submit Form
-        // =======================
-
-        form.addEventListener(
-            "submit",
-            async function (event) {
-
-                event.preventDefault();
+        fileNameText.textContent = "";
+        fileStatus.textContent = "Waiting";
+        fileStatus.className = "file-status";
+        resetProgress();
+    }
 
 
-                const file =
-                    fileInput.files[0];
+    function validateFile(file) {
+
+        if (!file) {
+            return false;
+        }
+
+        if (!file.name.toLowerCase().endsWith(".zip")) {
+
+            showToast(
+                "Invalid File",
+                "Only ZIP files are allowed.",
+                "warning"
+            );
+
+            return false;
+        }
+
+        if (file.size > MAX_FILE_SIZE) {
+
+            showToast(
+                "File Too Large",
+                "ZIP file must be less than 50 MB.",
+                "warning"
+            );
+
+            return false;
+        }
+
+        return true;
+    }
 
 
-                if (!file) {
+    function showSelectedFile(file) {
 
-                    showMessage(
-                        "Please select a ZIP file.",
-                        "error"
+        uploadZone.classList.remove("error");
+        uploadZone.classList.add("has-file");
+
+        fileNameText.textContent = file.name;
+
+        const sizeMB =
+            (file.size / (1024 * 1024)).toFixed(2);
+
+        fileStatus.textContent =
+            `${sizeMB} MB • Ready`;
+
+        fileStatus.className =
+            "file-status";
+
+        setStatus(
+            "ZIP ready — click Submit Project",
+            "success"
+        );
+    }
+
+
+    // =========================
+    // FILE SELECT
+    // =========================
+
+    fileInput.addEventListener("change", function () {
+
+        const file = this.files[0];
+
+        if (!file) {
+
+            resetFileState();
+
+            setStatus(
+                "Fill the form and upload a ZIP file"
+            );
+
+            return;
+        }
+
+        if (!validateFile(file)) {
+
+            this.value = "";
+
+            resetFileState();
+
+            setStatus(
+                "Please select a valid ZIP file",
+                "error"
+            );
+
+            return;
+        }
+
+        showSelectedFile(file);
+    });
+
+
+    // =========================
+    // DRAG & DROP
+    // =========================
+
+    uploadZone.addEventListener("dragover", function (event) {
+
+        event.preventDefault();
+
+        uploadZone.classList.add("dragover");
+    });
+
+
+    uploadZone.addEventListener("dragleave", function () {
+
+        uploadZone.classList.remove("dragover");
+    });
+
+
+    uploadZone.addEventListener("drop", function (event) {
+
+        event.preventDefault();
+
+        uploadZone.classList.remove("dragover");
+
+        const file =
+            event.dataTransfer.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        if (!validateFile(file)) {
+            return;
+        }
+
+        const dataTransfer =
+            new DataTransfer();
+
+        dataTransfer.items.add(file);
+
+        fileInput.files =
+            dataTransfer.files;
+
+        showSelectedFile(file);
+    });
+
+
+    // =========================
+    // FORM SUBMIT
+    // DIRECT FILEBASE UPLOAD
+    // =========================
+
+    form.addEventListener("submit", async function (event) {
+
+        event.preventDefault();
+
+        const file = fileInput.files[0];
+
+        if (!file) {
+
+            showToast(
+                "Missing ZIP",
+                "Please upload your project ZIP file first.",
+                "warning"
+            );
+
+            setStatus(
+                "ZIP file is required",
+                "error"
+            );
+
+            return;
+        }
+
+        if (!validateFile(file)) {
+            return;
+        }
+
+        // Student details
+        const studentName =
+            document.getElementById("studentName").value.trim();
+
+        const email =
+            document.getElementById("email").value.trim();
+
+        const course =
+            document.getElementById("course").value;
+
+        const branch =
+            document.getElementById("branch").value;
+
+        const year =
+            document.getElementById("year").value;
+
+        const rollNo =
+            document.getElementById("rollNo").value.trim();
+
+        const projectName =
+            document.getElementById("projectName").value.trim();
+
+        const aiPrompt =
+            document.getElementById("aiPrompt").value.trim();
+
+        // Disable button
+        submitBtn.disabled = true;
+        submitBtn.classList.add("loading");
+
+        startProgress();
+
+        updateProgress(
+            2,
+            "Preparing secure upload..."
+        );
+
+        setStatus(
+            "Preparing secure upload...",
+            "warning"
+        );
+
+        try {
+
+            // =================================
+            // 1. CREATE FILEBASE PRESIGNED URL
+            // =================================
+
+            const signResponse = await fetch(
+                "/api/create-upload-url",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        studentName: studentName,
+
+                        course: course,
+
+                        branch: branch,
+
+                        year: year,
+
+                        rollNo: rollNo,
+
+                        fileName: file.name,
+
+                        fileSize: file.size
+
+                    })
+                }
+            );
+
+            const signData =
+                await signResponse.json();
+
+            if (
+                !signResponse.ok ||
+                !signData.success
+            ) {
+
+                throw new Error(
+                    signData.message ||
+                    "Could not create secure upload URL."
+                );
+
+            }
+
+            updateProgress(
+                5,
+                "Secure upload ready..."
+            );
+
+
+            // =================================
+            // 2. DIRECT FILEBASE UPLOAD
+            // =================================
+
+            setStatus(
+                "Uploading ZIP directly...",
+                "warning"
+            );
+
+            await uploadDirectToFilebase(
+                signData.uploadUrl,
+                file,
+                function (percent) {
+
+                    // 5% → 94%
+                    const progress =
+                        5 +
+                        (
+                            percent * 0.89
+                        );
+
+                    updateProgress(
+                        progress,
+                        "Uploading ZIP..."
                     );
 
-                    return;
                 }
+            );
 
 
-                submitBtn.disabled = true;
+            // =================================
+            // 3. FILEBASE COMPLETE
+            // =================================
 
-                submitBtn.textContent =
-                    "Uploading...";
+            updateProgress(
+                95,
+                "ZIP uploaded. Saving submission..."
+            );
 
-
-                message.style.display =
-                    "none";
-
-
-                try {
-
-                    const formData =
-                        new FormData(form);
-
-
-                    const response =
-                        await fetch(
-                            "/submit-project",
-                            {
-                                method: "POST",
-                                body: formData
-                            }
-                        );
+            setStatus(
+                "ZIP uploaded. Saving submission...",
+                "warning"
+            );
 
 
-                    const result =
-                        await response.text();
+            // =================================
+            // 4. SAVE STUDENT DATA IN MONGODB
+            // =================================
 
+            const saveResponse =
+                await fetch(
+                    "/submit-project",
+                    {
+                        method: "POST",
 
-                    if (
-                        response.ok
-                    ) {
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
 
-                        showMessage(
-                            "Project submitted successfully! ✅",
-                            "success"
-                        );
+                        body: JSON.stringify({
 
+                            studentName:
+                                studentName,
 
-                        form.reset();
+                            email:
+                                email,
 
+                            course:
+                                course,
 
-                    } else {
+                            branch:
+                                branch,
 
-                        showMessage(
-                            result,
-                            "error"
-                        );
+                            year:
+                                year,
 
+                            rollNo:
+                                rollNo,
+
+                            projectName:
+                                projectName,
+
+                            aiPrompt:
+                                aiPrompt,
+
+                            fileName:
+                                file.name,
+
+                            fileUrl:
+                                signData.fileUrl
+
+                        })
                     }
-
-                }
-
-                catch (error) {
-
-                    console.log(
-                        "Upload Error:",
-                        error
-                    );
+                );
 
 
-                    showMessage(
-                        "Something went wrong. Please try again.",
-                        "error"
-                    );
-
-                }
+            const saveData =
+                await saveResponse.json();
 
 
-                submitBtn.disabled = false;
+            if (
+                !saveResponse.ok ||
+                !saveData.success
+            ) {
 
-                submitBtn.textContent =
-                    "Submit Project";
+                throw new Error(
+                    saveData.message ||
+                    "Could not save submission."
+                );
 
             }
-        );
 
 
-        // =======================
-        // Message Function
-        // =======================
+            // =================================
+            // 5. COMPLETE
+            // =================================
 
-        function showMessage(
-            text,
-            type
-        ) {
+            updateProgress(
+                100,
+                "Submission complete!"
+            );
 
-            message.textContent =
-                text;
+            finishProgress();
 
-            message.className =
-                "message " + type;
 
-            message.style.display =
-                "block";
+            showToast(
+                "Project Submitted!",
+                "Your project has been submitted successfully.",
+                "success"
+            );
+
+
+            setStatus(
+                "Project submitted successfully!",
+                "success"
+            );
+
+
+            // Reset form
+            form.reset();
+
+
+            // Keep success progress visible briefly
+            setTimeout(
+                function () {
+
+                    resetFileState();
+
+                    setStatus(
+                        "Ready for another submission"
+                    );
+
+                },
+                2500
+            );
+
 
         }
 
-    </script>
+        catch (error) {
+
+            console.error(
+                "Submission Error:",
+                error
+            );
+
+
+            uploadProgress.classList.remove(
+                "loading",
+                "success"
+            );
+
+            uploadProgress.classList.add(
+                "active"
+            );
+
+
+            updateProgress(
+                100,
+                "Upload failed"
+            );
+
+
+            showToast(
+                "Submission Failed",
+                error.message ||
+                "Something went wrong. Please try again.",
+                "error"
+            );
+
+
+            setStatus(
+                error.message ||
+                "Submission failed. Please try again.",
+                "error"
+            );
+
+        }
+
+        finally {
+
+            submitBtn.disabled = false;
+
+            submitBtn.classList.remove(
+                "loading"
+            );
+
+        }
+
+    });
+
+
+    // =================================
+    // DIRECT FILEBASE UPLOAD
+    // =================================
+
+    function uploadDirectToFilebase(
+        uploadUrl,
+        file,
+        onProgress
+    ) {
+
+        return new Promise(
+            function (resolve, reject) {
+
+                const xhr =
+                    new XMLHttpRequest();
+
+
+                xhr.open(
+                    "PUT",
+                    uploadUrl,
+                    true
+                );
+
+
+                xhr.setRequestHeader(
+                    "Content-Type",
+                    "application/zip"
+                );
+
+
+                xhr.upload.addEventListener(
+                    "progress",
+                    function (event) {
+
+                        if (
+                            event.lengthComputable
+                        ) {
+
+                            const percent =
+                                (
+                                    event.loaded /
+                                    event.total
+                                ) * 100;
+
+                            onProgress(
+                                percent
+                            );
+
+                        }
+
+                    }
+                );
+
+
+                xhr.onload =
+                    function () {
+
+                        if (
+                            xhr.status >= 200 &&
+                            xhr.status < 300
+                        ) {
+
+                            resolve();
+
+                        } else {
+
+                            reject(
+                                new Error(
+                                    "Filebase upload failed. HTTP " +
+                                    xhr.status
+                                )
+                            );
+
+                        }
+
+                    };
+
+
+                xhr.onerror =
+                    function () {
+
+                        reject(
+                            new Error(
+                                "Filebase network error. Check bucket CORS settings."
+                            )
+                        );
+
+                    };
+
+
+                xhr.onabort =
+                    function () {
+
+                        reject(
+                            new Error(
+                                "Upload cancelled."
+                            )
+                        );
+
+                    };
+
+
+                xhr.send(file);
+
+            }
+        );
+
+    }
+
+
+</script>
 
 </body>
-
 </html>
