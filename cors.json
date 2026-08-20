@@ -4,7 +4,10 @@
       "AllowedMethods": [
         "GET",
         "PUT",
-        "HEAD"
+        "HEAD",
+        "POST",
+        "DELETE",
+        "PUTCH"
       ],
       "AllowedOrigins": [
         "*"

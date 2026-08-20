@@ -105,8 +105,40 @@
             margin-top: 0.2rem;
         }
 
-        .header-badge {
+        .header-actions {
             margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 2;
+        }
+
+        .feedback-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.5rem 0.9rem;
+            border-radius: 100px;
+            background: #fff;
+            color: #1d4ed8;
+            text-decoration: none;
+            font-size: 0.72rem;
+            font-weight: 700;
+            border: 1px solid rgba(255,255,255,0.35);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+            transition: 0.25s ease;
+        }
+
+        .feedback-link:hover {
+            transform: translateY(-1px);
+            background: #eff6ff;
+            box-shadow: 0 7px 18px rgba(0,0,0,0.16);
+        }
+
+        .header-badge {
+            margin-left: 0;
             padding: 0.35rem 1rem;
             border-radius: 100px;
             background: rgba(255,255,255,0.12);
@@ -563,9 +595,16 @@
                 align-items: flex-start;
             }
 
-            .header-badge {
+            .header-actions {
                 margin-left: 0;
                 width: 100%;
+                justify-content: center;
+            }
+
+            .feedback-link,
+            .header-badge {
+                flex: 1;
+                justify-content: center;
                 text-align: center;
             }
 
@@ -633,10 +672,17 @@
                 <p>Upload your project ZIP & submit student details</p>
             </div>
 
-            <span class="header-badge">
-                <i class="fas fa-shield-alt"></i>
-                Secure Submission
-            </span>
+            <div class="header-actions">
+                <a href="/feedback.html" class="feedback-link">
+                    <i class="fas fa-comment-dots"></i>
+                    Give Feedback
+                </a>
+
+                <span class="header-badge">
+                    <i class="fas fa-shield-alt"></i>
+                    Secure Submission
+                </span>
+            </div>
         </div>
     </header>
 
@@ -796,6 +842,27 @@
                     <span class="hint">
                         Mention the prompt/instructions used with AI while developing your project.
                     </span>
+                </div>
+
+                <!-- LIVE PROJECT URL -->
+                <div class="form-group full-width">
+
+                    <label for="liveUrl">
+                        <i class="fas fa-globe"></i>
+                        Live Project URL
+                    </label>
+
+                    <input
+                        type="url"
+                        id="liveUrl"
+                        name="liveUrl"
+                        placeholder="https://your-project.onrender.com"
+                    >
+
+                    <span class="hint">
+                        Enter your deployed project URL (optional)
+                    </span>
+
                 </div>
 
                 <!-- ZIP UPLOAD -->
@@ -1237,6 +1304,9 @@
         const aiPrompt =
             document.getElementById("aiPrompt").value.trim();
 
+        const liveUrl =
+            document.getElementById("liveUrl").value.trim();
+
         // Disable button
         submitBtn.disabled = true;
         submitBtn.classList.add("loading");
@@ -1398,7 +1468,10 @@
                                 file.name,
 
                             fileUrl:
-                                signData.fileUrl
+                                signData.fileUrl,
+
+                            liveUrl:
+                                liveUrl
 
                         })
                     }
